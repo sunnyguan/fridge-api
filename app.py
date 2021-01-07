@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS, cross_origin
 import pymongo
 
 from dotenv import load_dotenv
@@ -12,6 +13,8 @@ users = db["users"]
 # print(users.find_one())
 
 app = Flask(__name__, static_url_path='')
+cor = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 def clean(obj):
     if obj:
@@ -20,6 +23,7 @@ def clean(obj):
 # get all user and their data
 # no parameters required
 @app.route('/users', methods=['GET'])
+@cross_origin()
 def getAll():
     res = users.find({})
     arr = []
@@ -32,6 +36,7 @@ def getAll():
 # route: /get?name=NAME
 # example: /get?name=bob
 @app.route('/get', methods=['GET'])
+@cross_origin()
 def respond():
     name = request.args.get('name')
     res = users.find_one({'name': name})
@@ -44,6 +49,7 @@ def respond():
 # route: /add?name=NAME&item=ITEM
 # example: /add?name=bob&item=watermelon
 @app.route('/add', methods=['GET'])
+@cross_origin()
 def add():
     name = {'name': request.args.get('name')}
     item = request.args.get('item')
@@ -65,6 +71,7 @@ def add():
 # route: /remove?name=NAME&item=ITEM
 # example: /remove?name=bob&item=watermelon
 @app.route('/remove', methods=['GET'])
+@cross_origin()
 def remove():
     name = {'name': request.args.get('name')}
     item = request.args.get('item')
