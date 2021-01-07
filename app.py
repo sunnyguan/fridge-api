@@ -74,7 +74,7 @@ def add():
     else:
         users.insert_one({
             'name': name['name'],
-            'food': [item],
+            'food': {item: {'amount': amount, 'unit': unit}},
             'spending': []
         })
     upd = users.find_one(name)
