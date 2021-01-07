@@ -124,11 +124,10 @@ def get_recipes():
 
     return jsonify(recipes)
 
-@app.route('/recipeDetails', methods=['GET'])
+@app.route('/recipeFake', methods=['GET'])
 @cross_origin()
 def details():
     return jsonify(detail_recipe)
-
 """
 This section is for weekly spending CRUD
 """
