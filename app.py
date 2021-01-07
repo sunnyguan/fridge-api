@@ -14,6 +14,9 @@ users = db["users"]
 with open('sample.json', 'r') as f:
     sample_recipes = json.load(f)
 
+with open('sample_recipe.json', 'r') as f:
+    detail_recipe = json.load(f)
+
 app = Flask(__name__, static_url_path='')
 cor = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
@@ -97,6 +100,12 @@ def get_recipe():
     ingredients = request.args.getlist('items')
     print(ingredients)
     return jsonify(sample_recipes)
+
+@app.route('/recipeDetails', methods=['GET'])
+@cross_origin()
+def details():
+    recipe_id = request.args.get('id')
+    return jsonify(detail_recipe)
 
 
 @app.route('/')
