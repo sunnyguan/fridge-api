@@ -2,12 +2,17 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS, cross_origin
 import pymongo
 import json
+import spoonacular as sp
+
 
 from dotenv import load_dotenv
 import os
 load_dotenv()
 
-client = pymongo.MongoClient(os.getenv("MONGODB_URI"), connect=False)
+MONGODB_URI="mongodb+srv://root:root@cluster0.ja1ul.mongodb.net/fridge-list?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE"
+api = sp.API("9fd8eec03faa4b12a550cb6fc595d7da")
+
+client = pymongo.MongoClient(MONGODB_URI, connect=False)
 db = client["fridge-list"]
 users = db["users"]
 
@@ -94,12 +99,29 @@ def remove():
     else:
         return jsonify([])
 
+# route: /recipe?name=NAME
 @app.route('/recipe', methods=['GET'])
 @cross_origin()
-def get_recipe():
-    ingredients = request.args.getlist('items')
-    print(ingredients)
-    return jsonify(sample_recipes)
+def get_recipes():
+    name = request.args.get('name')
+    info = users.find_one({'name': name})
+    ingredients = ', '.join(info['food'])
+    recipes = api.search_recipes_by_ingredients(ingredients, number=2, ranking=2).json()
+
+    ids = ""
+    for recipe in recipes:
+        ids = ids + str(recipe['id']) + ','
+    ids = ids[:len(ids)-1]
+    recipeInfo = api.get_recipe_information_bulk(ids).json()
+
+    for i in range(len(recipes)):
+        recipes[i]["readyInMinutes"] = recipeInfo[i]["readyInMinutes"]
+        recipes[i]["pricePerServing"] = recipeInfo[i]["pricePerServing"]
+        del recipes[i]["id"]
+        del recipes[i]["imageType"]
+        del recipes[i]["likes"]
+
+    return jsonify(recipes)
 
 @app.route('/recipeDetails', methods=['GET'])
 @cross_origin()
