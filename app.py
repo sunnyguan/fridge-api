@@ -1,16 +1,24 @@
 from flask import Flask, request, jsonify
-app = Flask(__name__)
+import pymongo
 
-sample_data = {
-        "joe": ["apple", "orange"],
-        "john": ["eggs", "milk"],
-        "bob": ["rice", "pasta"]
-}
+from dotenv import load_dotenv
+import os
+load_dotenv()
+
+client = pymongo.MongoClient(os.getenv("MONGODB_URI"), connect=False)
+db = client["fridge-list"]
+users = db["users"]
+
+# print(users.find_one())
+
+app = Flask(__name__)
 
 @app.route('/users', methods=['GET'])
 def respond():
     name = request.args.get('name')
-    return jsonify(sample_data[name])
+    res = users.find_one({'name': name})
+    res['_id'] = str(res['_id'])
+    return jsonify(res)
 
 
 @app.route('/')
