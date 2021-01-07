@@ -67,7 +67,8 @@ def add():
     else:
         users.insert_one({
             'name': name['name'],
-            'food': [item]
+            'food': [item],
+            'budget': []
         })
     upd = users.find_one({'name': name['name']})
     clean(upd)
@@ -106,6 +107,53 @@ def get_recipe():
 def details():
     recipe_id = request.args.get('id')
     return jsonify(detail_recipe)
+
+"""
+This section is for weekly budget CRUD
+"""
+# route: /add?name=NAME&item=ITEM
+# example: /add?name=bob&item=watermelon
+@app.route('/budget/add', methods=['GET'])
+@cross_origin()
+def budget_add():
+    name = {'name': request.args.get('name')}
+    item = request.args.get('item')
+    col = users.find_one({'name': name['name']})
+    print(col)
+    if col:
+        col = col['budget']
+        col.append(item)
+        users.update_one(name, {'$set': {'budget': col}})
+    else:
+        users.insert_one({
+            'name': name['name'],
+            'food': [],
+            'budget': [item]
+        })
+    upd = users.find_one({'name': name['name']})
+    clean(upd)
+    return jsonify(upd)
+
+# route: /remove?name=NAME&item=ITEM
+# example: /remove?name=bob&item=watermelon
+@app.route('/budget/remove', methods=['GET'])
+@cross_origin()
+def budget_remove():
+    name = {'name': request.args.get('name')}
+    item = request.args.get('item')
+    col = users.find_one({'name': name['name']})
+    if col:
+        col = col['budget']
+        try:
+            col.remove(item)
+        except:
+            pass
+        users.update_one(name, {'$set': {'budget': col}})
+        upd = users.find_one({'name': name['name']})
+        clean(upd)
+        return jsonify(upd)
+    else:
+        return jsonify([])
 
 
 @app.route('/')
