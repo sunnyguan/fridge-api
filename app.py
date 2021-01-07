@@ -56,26 +56,28 @@ def respond():
     else:
         return jsonify([])
 
-# route: /add?name=NAME&item=ITEM
-# example: /add?name=bob&item=watermelon
+# route: /add?name=NAME&item=ITEM&amount=AMOUNT&unit=UNIT
+# example: /add?name=bob&item=watermelon&amount=1&unit
 @app.route('/add', methods=['GET'])
 @cross_origin()
 def add():
     name = {'name': request.args.get('name')}
     item = request.args.get('item')
-    col = users.find_one({'name': name['name']})
+    amount = request.args.get('amount')
+    unit = request.args.get('unit')
+    col = users.find_one(name)
     print(col)
     if col:
         col = col['food']
-        col.append(item)
+        col[item] = {'amount': amount, 'unit': unit}
         users.update_one(name, {'$set': {'food': col}})
     else:
         users.insert_one({
             'name': name['name'],
-            'food': [item],
+            'food': {item: {'amount': amount, 'unit': unit}},
             'spending': []
         })
-    upd = users.find_one({'name': name['name']})
+    upd = users.find_one(name)
     clean(upd)
     return jsonify(upd)
 
@@ -86,15 +88,15 @@ def add():
 def remove():
     name = {'name': request.args.get('name')}
     item = request.args.get('item')
-    col = users.find_one({'name': name['name']})
+    col = users.find_one(name)
     if col:
         col = col['food']
         try:
-            col.remove(item)
+            del col[item]
         except:
             pass
         users.update_one(name, {'$set': {'food': col}})
-        upd = users.find_one({'name': name['name']})
+        upd = users.find_one(name)
         clean(upd)
         return jsonify(upd)
     else:
@@ -106,7 +108,7 @@ def remove():
 def get_recipes():
     name = request.args.get('name')
     info = users.find_one({'name': name})
-    ingredients = ', '.join(info['food'])
+    ingredients = ', '.join(info['food'].keys())
     recipes = api.search_recipes_by_ingredients(ingredients, number=2, ranking=2).json()
 
     ids = ""
