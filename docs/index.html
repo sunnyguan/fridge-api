@@ -1,8 +1,38 @@
+<!doctype html>
 <html>
-    <head>
-    </head>
-    <body>
-        <h1>Fridge API</h1>
-        <h2>
-    </body>
-</html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/3.0.1/github-markdown.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.18.1/lib/index.min.js">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markdown-it-texmath@0.6.5/css/texmath.css">
+<link rel="stylesheet" href="https://gitcdn.xyz/repo/goessner/mdmath/master/css/vscode-texmath.css">
+<link rel="stylesheet" href="https://raw.githubusercontent.com/jasonm23/markdown-css-themes/gh-pages/foghorn.css">
+</head>
+<body class="markdown-body">
+<h1 id="fridge-api-1" data-line="0" class="code-line">Fridge API</h1>
+<h2 id="routes-1" data-line="2" class="code-line">Routes</h2>
+<p data-line="4" class="code-line">Note: for all examples, assume I am modifying &quot;bob&quot;'s list and adding/removing &quot;watermelon&quot;.</p>
+<ol>
+<li data-line="6" class="code-line"><code>/users/</code>: view all user data
+<ol>
+<li data-line="7" class="code-line">No parameters</li>
+</ol>
+</li>
+<li data-line="8" class="code-line"><code>/get</code>: view data for one user
+<ol>
+<li data-line="9" class="code-line">Usage: <code>/get?name=bob</code></li>
+</ol>
+</li>
+<li data-line="10" class="code-line"><code>/add</code>: add an item to an user's list
+<ol>
+<li data-line="11" class="code-line">Usage: <code>/add?name=bob&amp;item=watermelon</code></li>
+</ol>
+</li>
+<li data-line="12" class="code-line"><code>/remove</code>: remove an item from an user's list
+<ol>
+<li data-line="13" class="code-line">Usage: <code>/remove?name=bob&amp;item=watermelon</code>,</li>
+</ol>
+</li>
+</ol>
+</body></html>
