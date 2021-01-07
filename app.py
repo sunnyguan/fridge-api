@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS, cross_origin
 import pymongo
+import json
 
 from dotenv import load_dotenv
 import os
@@ -10,7 +11,8 @@ client = pymongo.MongoClient(os.getenv("MONGODB_URI"), connect=False)
 db = client["fridge-list"]
 users = db["users"]
 
-# print(users.find_one())
+with open('sample.json', 'r') as f:
+    sample_recipes = json.load(f)
 
 app = Flask(__name__, static_url_path='')
 cor = CORS(app)
@@ -88,6 +90,14 @@ def remove():
         return jsonify(upd)
     else:
         return jsonify([])
+
+@app.route('/recipe', methods=['GET'])
+@cross_origin()
+def get_recipe():
+    ingredients = request.args.getlist('items')
+    print(ingredients)
+    return jsonify(sample_recipes)
+
 
 @app.route('/')
 def index():
