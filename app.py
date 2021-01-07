@@ -9,8 +9,8 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 
-MONGODB_URI="mongodb+srv://root:root@cluster0.ja1ul.mongodb.net/fridge-list?retryWrites=true&w=majority&ssl=true&ssl_cert_reqs=CERT_NONE"
-api = sp.API("9fd8eec03faa4b12a550cb6fc595d7da")
+MONGODB_URI=os.getenv("MONGODB_URI")
+api = sp.API(os.getenv("SP_KEY"))
 
 client = pymongo.MongoClient(MONGODB_URI, connect=False)
 db = client["fridge-list"]
