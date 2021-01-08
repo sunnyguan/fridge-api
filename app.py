@@ -3,7 +3,6 @@ from flask_cors import CORS, cross_origin
 import pymongo
 import json
 import spoonacular as sp
-from tesseract_image_to_text import get_words
 from azure_ocr import getWords
 
 import boto

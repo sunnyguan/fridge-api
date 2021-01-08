@@ -32,5 +32,5 @@ def getWords(url, endpoint, subscription_key):
     if get_handw_text_results.status == OperationStatusCodes.succeeded:
         for text_result in get_handw_text_results.analyze_result.read_results:
             for line in text_result.lines:
-                arr.append(line.text)
+                arr.append(line.text.lower())
     return arr
