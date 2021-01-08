@@ -115,7 +115,7 @@ def get_recipes():
     name = request.args.get('name')
     info = users.find_one({'name': name})
     ingredients = ', '.join(info['food'].keys())
-    recipes = api.search_recipes_by_ingredients(ingredients, number=2, ranking=2).json()
+    recipes = api.search_recipes_by_ingredients(ingredients, number=10, ranking=2).json()
 
     ids = ""
     for recipe in recipes:
