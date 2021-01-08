@@ -27,7 +27,7 @@ def getWords(url, endpoint, subscription_key):
             break
         time.sleep(1)
 
-    # Print the detected text, line by line
+    # Create and return list
     arr = []
     if get_handw_text_results.status == OperationStatusCodes.succeeded:
         for text_result in get_handw_text_results.analyze_result.read_results:
