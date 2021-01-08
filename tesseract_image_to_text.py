@@ -43,6 +43,7 @@ def image_to_text(image_filepath: str) -> str:
     # print(pytesseract.image_to_string(bg))
 
     result = pytesseract.image_to_string(image)
+    print(result)
     return result
 
 
