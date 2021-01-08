@@ -124,7 +124,19 @@ def get_recipes():
     recipeInfo = api.get_recipe_information_bulk(ids).json()
 
     for i in range(len(recipes)):
-        recipes[i]["details"] = recipeInfo[i]
+        recipes[i]["readyInMinutes"] = recipeInfo[i]["readyInMinutes"]
+        recipes[i]["pricePerServing"] = recipeInfo[i]["pricePerServing"]
+        if "spoonacularSourceUrl" in recipeInfo[i]:
+            recipes[i]["spoonacularSourceUrl"] = recipeInfo[i]["spoonacularSourceUrl"]
+        if "sourceUrl" in recipeInfo[i]:
+            recipes[i]["sourceUrl"] = recipeInfo[i]["sourceUrl"]
+        recipes[i]["summary"] = recipeInfo[i]["summary"]
+        recipes[i]["spoonacularScore"] = recipeInfo[i]["spoonacularScore"]
+        recipes[i]["servings"] = recipeInfo[i]["servings"]
+        recipes[i]["healthScore"] = recipeInfo[i]["healthScore"]
+        del recipes[i]["id"]
+        del recipes[i]["imageType"]
+        del recipes[i]["likes"]
 
     return jsonify(recipes)
 
