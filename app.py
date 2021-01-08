@@ -179,29 +179,24 @@ def spending_remove():
 
 @app.route("/receipt", methods=['POST'])
 def detect_face():
-    try:
-        req = request.json
-        print(req["image"])
+    req = request.json
+    print(req["image"])
 
-        # decode base64 string into np array
-        # nparr = np.frombuffer(base64.b64decode(req['image'].encode('utf-8')), np.uint8)
+    # decode base64 string into np array
+    # nparr = np.frombuffer(base64.b64decode(req['image'].encode('utf-8')), np.uint8)
 
-        # decoded image
-        # img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    # decoded image
+    # img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-        resp = jsonify(["apple", "oranges"])
-        resp.status_code = 200
-        return resp
+    resp = jsonify(["apple", "oranges"])
+    resp.status_code = 200
+    res = users.find_one({'name': req["name"]})
+    if res:
+        clean(res)
+        return jsonify(res)
+    else:
+        return jsonify([])
 
-    except Exception as e:
-        response = {
-            'success': False,
-            'status code': 500,
-            'message': str(e),
-            }
-        resp = jsonify(response)
-        resp.status_code = 500
-        return resp
 
 @app.route('/')
 def index():
