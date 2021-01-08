@@ -10,9 +10,7 @@ from PIL import Image
 import sys
 import time
 
-def getWords(url):
-    endpoint = "https://analyze-receipts.cognitiveservices.azure.com/" # os.environ['COMPUTER_VISION_ENDPOINT'] # https://homeworkocr.cognitiveservices.azure.com/
-    subscription_key = "9e0283f7f3fd4c2cbad98d76415f0e07" # os.environ['COMPUTER_VISION_SUBSCRIPTION_KEY'] # a87c544e2d874de5a8b3eb6c92122482
+def getWords(url, endpoint, subscription_key):
     computervision_client = ComputerVisionClient(endpoint, CognitiveServicesCredentials(subscription_key))
     remote_image_url = url
     recognize_handw_results = computervision_client.read(remote_image_url,  raw=True)
