@@ -3,11 +3,23 @@ from flask_cors import CORS, cross_origin
 import pymongo
 import json
 import spoonacular as sp
+from tesseract_image_to_text import get_words
+from azure_ocr import getWords
 
+import boto
+from boto.s3.key import Key
+import base64
+import uuid
 
 from dotenv import load_dotenv
 import os
 load_dotenv()
+
+conn = boto.connect_s3(os.getenv("S3_1"), os.getenv("S3_2"))
+bucket = conn.get_bucket("fridge-api")
+
+AZURE_ENDPOINT = os.getenv("AZURE_URL")
+AZURE_KEY = os.getenv("AZURE_KEY")
 
 MONGODB_URI=os.getenv("MONGODB_URI")
 api = sp.API(os.getenv("SP_KEY"))
@@ -65,11 +77,17 @@ def add():
     item = request.args.get('item')
     amount = request.args.get('amount')
     unit = request.args.get('unit')
+    change_flag = request.args.get('change')
     col = users.find_one(name)
     print(col)
     if col:
         col = col['food']
-        col[item] = {'amount': amount, 'unit': unit}
+        if change_flag == 'amount':
+            col[item] = {'amount': amount, 'unit': col[item]['unit']}
+        elif change_flag == 'unit':
+            col[item] = {'amount': col[item]['amount'], 'unit': unit}
+        else:
+            col[item] = {'amount': amount, 'unit': unit}
         users.update_one(name, {'$set': {'food': col}})
     else:
         users.insert_one({
@@ -109,7 +127,7 @@ def get_recipes():
     name = request.args.get('name')
     info = users.find_one({'name': name})
     ingredients = ', '.join(info['food'].keys())
-    recipes = api.search_recipes_by_ingredients(ingredients, number=1, ranking=2).json()
+    recipes = api.search_recipes_by_ingredients(ingredients, number=10, ranking=2).json()
 
     ids = ""
     for recipe in recipes:
@@ -121,9 +139,9 @@ def get_recipes():
     for i in range(len(recipes)):
         recipes[i]["readyInMinutes"] = recipeInfo[i]["readyInMinutes"]
         recipes[i]["pricePerServing"] = recipeInfo[i]["pricePerServing"]
-        if "spoonacularSourceUrl" in recipeInfo[i].keys():
+        if "spoonacularSourceUrl" in recipeInfo[i]:
             recipes[i]["spoonacularSourceUrl"] = recipeInfo[i]["spoonacularSourceUrl"]
-        if "sourceUrl" in recipeInfo[i].keys():
+        if "sourceUrl" in recipeInfo[i]:
             recipes[i]["sourceUrl"] = recipeInfo[i]["sourceUrl"]
         recipes[i]["summary"] = recipeInfo[i]["summary"]
         recipes[i]["spoonacularScore"] = recipeInfo[i]["spoonacularScore"]
@@ -183,6 +201,32 @@ def spending_remove():
         upd = users.find_one({'name': name['name']})
         clean(upd)
         return jsonify(upd)
+    else:
+        return jsonify([])
+
+@app.route("/receipt", methods=['POST'])
+@cross_origin()
+def receipt():
+    req = request.json
+    # print(get_words(req['image']))
+    # decode base64 string into np array
+    # nparr = np.frombuffer(base64.b64decode(req['image'].encode('utf-8')), np.uint8)
+    k = Key(bucket)
+    k.key = f"{str(uuid.uuid4())}.jpeg"
+    k.set_metadata('Content-Type', 'image/jpeg')
+    k.set_contents_from_string(base64.b64decode(req["image"]))
+    k.set_metadata('Content-Type', 'image/jpeg') # from https://stackoverflow.com/a/22730676 and https://stackoverflow.com/questions/16156062/using-amazon-s3-boto-library-how-can-i-get-the-url-of-a-saved-key
+    k.set_acl('public-read')
+    url = f"https://fridge-api.s3-us-west-2.amazonaws.com/{k.key}"
+    arr = getWords(url, AZURE_ENDPOINT, AZURE_KEY)
+    print(arr)
+    # decoded image
+    # img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+    res = users.find_one({'name': req["name"]})
+    if res:
+        clean(res)
+        return jsonify(res)
     else:
         return jsonify([])
 

@@ -13,25 +13,39 @@ import requests
 from typing import List, Dict
 import json
 
+import base64
+import io
 
-def main() -> None:
+
+def get_words(b64) -> List[Dict[str, str]]:
     """Main entrypoint to the program."""
     # In order to bypass the image conversions of pytesseract, just use relative or absolute image path
-    image_filepath: str = 'test.jpg'
-    text: str = image_to_text(image_filepath)
+    text: str = image_to_text(b64)
     formatted_text: List[List[str]] = format_lines(text)
     food_list: List[str] = extract_foods(formatted_text)
     data_summary: List[Dict[str, str]] = summarize_food_data(food_list)
-    with open("summary_data.json", "w") as data_file: 
-        json.dump(data_summary, data_file)
+    # with open("summary_data.json", "w") as data_file: 
+    #     json.dump(data_summary, data_file)
+    return data_summary
 
 
 def image_to_text(image_filepath: str) -> str:
     """Convert the receipt image to text."""
     # If you don't have tesseract executable in your PATH, include the following:
-    pytesseract.pytesseract.tesseract_cmd = r'C:/Users/chris/AppData/Local/Programs/Tesseract-OCR/tesseract'
+    pytesseract.pytesseract.tesseract_cmd = r'/app/.apt/usr/bin/tesseract'
+    imgstring = image_filepath
+    pic = io.StringIO()
+    image_string = io.BytesIO(base64.b64decode(imgstring))
+    image = Image.open(image_string)
+    new_size = tuple(2*x for x in image.size)
+    image = image.resize(new_size, Image.ANTIALIAS)
+    # bg = Image.new("RGB", image.size, (255,255,255))
+    # bg.paste(image,image)
 
-    result = pytesseract.image_to_string(image_filepath)
+    # print(pytesseract.image_to_string(bg))
+
+    result = pytesseract.image_to_string(image)
+    print(result)
     return result
 
 
@@ -118,5 +132,5 @@ def summarize_food_data(unprocessed_food_list: List[str]) -> List[Dict[str, str]
     return summary
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
