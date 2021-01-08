@@ -11,8 +11,8 @@ import sys
 import time
 
 def getWords(url):
-    endpoint = "https://c1-fridge.cognitiveservices.azure.com/" # os.environ['COMPUTER_VISION_ENDPOINT'] # https://homeworkocr.cognitiveservices.azure.com/
-    subscription_key = "ed643e1b154d45b6a2e27311ccb0eb9c" # os.environ['COMPUTER_VISION_SUBSCRIPTION_KEY'] # a87c544e2d874de5a8b3eb6c92122482
+    endpoint = "https://analyze-receipts.cognitiveservices.azure.com/" # os.environ['COMPUTER_VISION_ENDPOINT'] # https://homeworkocr.cognitiveservices.azure.com/
+    subscription_key = "9e0283f7f3fd4c2cbad98d76415f0e07" # os.environ['COMPUTER_VISION_SUBSCRIPTION_KEY'] # a87c544e2d874de5a8b3eb6c92122482
     computervision_client = ComputerVisionClient(endpoint, CognitiveServicesCredentials(subscription_key))
     remote_image_url = url
     recognize_handw_results = computervision_client.read(remote_image_url,  raw=True)
@@ -34,5 +34,5 @@ def getWords(url):
     if get_handw_text_results.status == OperationStatusCodes.succeeded:
         for text_result in get_handw_text_results.analyze_result.read_results:
             for line in text_result.lines:
-                arr.append(line)
+                arr.append(line.text)
     return arr
