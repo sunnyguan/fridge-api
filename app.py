@@ -180,7 +180,6 @@ def spending_remove():
 @app.route("/receipt", methods=['POST'])
 def detect_face():
     req = request.json
-    print(req["image"])
 
     # decode base64 string into np array
     # nparr = np.frombuffer(base64.b64decode(req['image'].encode('utf-8')), np.uint8)
