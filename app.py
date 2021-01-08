@@ -34,6 +34,9 @@ with open('sample.json', 'r') as f:
 with open('sample2.json', 'r') as f:
     detail_recipe = json.load(f)
 
+with open('set_food.txt', 'r') as f:
+    foods = set(f.read().split("\n"))
+
 app = Flask(__name__, static_url_path='')
 cor = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
@@ -218,7 +221,8 @@ def receipt():
     k.set_acl('public-read')
     url = f"https://fridge-api.s3-us-west-2.amazonaws.com/{k.key}"
     arr = getWords(url, AZURE_ENDPOINT, AZURE_KEY)
-    print(arr)
+    food_items = [item for item in arr if is_food(item)]
+    print(food_items)
     # decoded image
     # img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
@@ -229,6 +233,8 @@ def receipt():
     else:
         return jsonify([])
 
+def is_food(item):
+    any(substring in item for substring in foods)
 
 @app.route('/')
 def index():
