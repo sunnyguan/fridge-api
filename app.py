@@ -65,11 +65,17 @@ def add():
     item = request.args.get('item')
     amount = request.args.get('amount')
     unit = request.args.get('unit')
+    change_flag = request.args.get('change')
     col = users.find_one(name)
     print(col)
     if col:
         col = col['food']
-        col[item] = {'amount': amount, 'unit': unit}
+        if change_flag == 'amount':
+            col[item] = {'amount': amount, 'unit': col[item]['unit']}
+        elif change_flag == 'unit':
+            col[item] = {'amount': col[item]['amount'], 'unit': unit}
+        else:
+            col[item] = {'amount': amount, 'unit': unit}
         users.update_one(name, {'$set': {'food': col}})
     else:
         users.insert_one({
