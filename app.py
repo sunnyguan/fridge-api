@@ -35,6 +35,7 @@ with open('sample2.json', 'r') as f:
 
 with open('set_food.txt', 'r') as f:
     foods = f.read().split("\n")
+foods = [foo for foo in foods if len(foo) >= 3]
 
 app = Flask(__name__, static_url_path='')
 cor = CORS(app)
@@ -233,7 +234,10 @@ def receipt():
         return jsonify([])
 
 def is_food(item):
-    return any(substring in item for substring in foods)
+    for foo in foods:
+        if foo in item:
+            return True
+    return False
 
 @app.route('/')
 def index():
