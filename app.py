@@ -12,6 +12,9 @@ import uuid
 
 from dotenv import load_dotenv
 import os
+
+from typing import List, Dict
+
 load_dotenv()
 
 conn = boto.connect_s3(os.getenv("S3_1"), os.getenv("S3_2"))
@@ -223,9 +226,24 @@ def receipt():
     url = f"https://fridge-api.s3-us-west-2.amazonaws.com/{k.key}"
     arr = getWords(url, AZURE_ENDPOINT, AZURE_KEY)
     food_items = [item for item in arr if is_food(item)]
-    print(food_items)
+    # print(food_items)
     # decoded image
     # img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    
+    summary: List[Dict[str, str]] = []
+    item_count_data: Dict[str, int] = {}
+    for item in food_items:
+        if item not in item_count_data:
+            item_count_data[item] = 1
+        else:
+            item_count_data[item] += 1
+    for product in item_count_data:
+        item_information: Dict[str, str] = {}
+        item_information["name"] = product
+        item_information["quantity"] = str(item_count_data[product])
+        item_information["units"] = "-"
+        summary.append(item_information)
+    print(summary)
 
     res = users.find_one({'name': req["name"]})
     if res:
