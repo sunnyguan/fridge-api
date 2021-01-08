@@ -11,11 +11,15 @@ from boto.s3.key import Key
 import base64
 import uuid
 
-conn = boto.connect_s3("AKIAQP3DA57ASK23GZFN","h2oeJo3d9fspLz3osp7NR3ELspaWVCHHKJevl0oF")
-bucket = conn.get_bucket("fridge-api")
 from dotenv import load_dotenv
 import os
 load_dotenv()
+
+conn = boto.connect_s3(os.getenv("S3_1"), os.getenv("S3_2"))
+bucket = conn.get_bucket("fridge-api")
+
+AZURE_ENDPOINT = os.getenv("AZURE_URL")
+AZURE_KEY = os.getenv("AZURE_KEY")
 
 MONGODB_URI=os.getenv("MONGODB_URI")
 api = sp.API(os.getenv("SP_KEY"))
@@ -201,7 +205,7 @@ def spending_remove():
 
 @app.route("/receipt", methods=['POST'])
 @cross_origin()
-def detect_face():
+def receipt():
     req = request.json
     # print(get_words(req['image']))
     # decode base64 string into np array
@@ -213,7 +217,7 @@ def detect_face():
     k.set_metadata('Content-Type', 'image/jpeg') # from https://stackoverflow.com/a/22730676 and https://stackoverflow.com/questions/16156062/using-amazon-s3-boto-library-how-can-i-get-the-url-of-a-saved-key
     k.set_acl('public-read')
     url = f"https://fridge-api.s3-us-west-2.amazonaws.com/{k.key}"
-    arr = getWords(url)
+    arr = getWords(url, AZURE_ENDPOINT, AZURE_KEY)
     print(arr)
     # decoded image
     # img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
