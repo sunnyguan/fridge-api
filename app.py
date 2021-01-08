@@ -109,19 +109,22 @@ def get_recipes():
     name = request.args.get('name')
     info = users.find_one({'name': name})
     ingredients = ', '.join(info['food'].keys())
-    recipes = api.search_recipes_by_ingredients(ingredients, number=2, ranking=2).json()
+    recipes = api.search_recipes_by_ingredients(ingredients, number=1, ranking=2).json()
 
     ids = ""
     for recipe in recipes:
         ids = ids + str(recipe['id']) + ','
     ids = ids[:len(ids)-1]
     recipeInfo = api.get_recipe_information_bulk(ids).json()
-
+    print(recipes)
+    print(recipeInfo)
     for i in range(len(recipes)):
         recipes[i]["readyInMinutes"] = recipeInfo[i]["readyInMinutes"]
         recipes[i]["pricePerServing"] = recipeInfo[i]["pricePerServing"]
-        recipes[i]["spoonacularSourceUrl"] = recipeInfo[i]["spoonacularSourceUrl"]
-        recipes[i]["sourceUrl"] = recipeInfo[i]["sourceUrl"]
+        if "spoonacularSourceUrl" in recipeInfo[i].keys():
+            recipes[i]["spoonacularSourceUrl"] = recipeInfo[i]["spoonacularSourceUrl"]
+        if "sourceUrl" in recipeInfo[i].keys():
+            recipes[i]["sourceUrl"] = recipeInfo[i]["sourceUrl"]
         recipes[i]["summary"] = recipeInfo[i]["summary"]
         recipes[i]["spoonacularScore"] = recipeInfo[i]["spoonacularScore"]
         recipes[i]["servings"] = recipeInfo[i]["servings"]
