@@ -137,7 +137,8 @@ def get_recipes():
         ids = ids + str(recipe['id']) + ','
     ids = ids[:len(ids)-1]
     recipeInfo = api.get_recipe_information_bulk(ids).json()
-
+    print(recipes)
+    print(recipeInfo)
     for i in range(len(recipes)):
         recipes[i]["readyInMinutes"] = recipeInfo[i]["readyInMinutes"]
         recipes[i]["pricePerServing"] = recipeInfo[i]["pricePerServing"]
