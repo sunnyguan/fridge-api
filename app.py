@@ -4,10 +4,12 @@ import pymongo
 import json
 import spoonacular as sp
 from tesseract_image_to_text import get_words
+from azure_ocr import getWords
 
 import boto
 from boto.s3.key import Key
 import base64
+import uuid
 
 conn = boto.connect_s3("AKIAQP3DA57ASK23GZFN","h2oeJo3d9fspLz3osp7NR3ELspaWVCHHKJevl0oF")
 bucket = conn.get_bucket("fridge-api")
@@ -205,11 +207,14 @@ def detect_face():
     # decode base64 string into np array
     # nparr = np.frombuffer(base64.b64decode(req['image'].encode('utf-8')), np.uint8)
     k = Key(bucket)
-    k.key = "test.jpeg"
+    k.key = f"{str(uuid.uuid4())}.jpeg"
     k.set_metadata('Content-Type', 'image/jpeg')
     k.set_contents_from_string(base64.b64decode(req["image"]))
     k.set_metadata('Content-Type', 'image/jpeg') # from https://stackoverflow.com/a/22730676 and https://stackoverflow.com/questions/16156062/using-amazon-s3-boto-library-how-can-i-get-the-url-of-a-saved-key
     k.set_acl('public-read')
+    url = f"https://fridge-api.s3-us-west-2.amazonaws.com/{k.key}"
+    arr = getWords(url)
+    print(arr)
     # decoded image
     # img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
