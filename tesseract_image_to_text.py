@@ -37,6 +37,8 @@ def image_to_text(image_filepath: str) -> str:
     pic = io.StringIO()
     image_string = io.BytesIO(base64.b64decode(imgstring))
     image = Image.open(image_string)
+    new_size = tuple(2*x for x in image.size)
+    image = image.resize(new_size, Image.ANTIALIAS)
     # bg = Image.new("RGB", image.size, (255,255,255))
     # bg.paste(image,image)
 
