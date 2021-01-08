@@ -34,7 +34,7 @@ with open('sample2.json', 'r') as f:
     detail_recipe = json.load(f)
 
 with open('set_food.txt', 'r') as f:
-    foods = set(f.read().split("\n"))
+    foods = f.read().split("\n")
 
 app = Flask(__name__, static_url_path='')
 cor = CORS(app)
@@ -233,7 +233,7 @@ def receipt():
         return jsonify([])
 
 def is_food(item):
-    any(substring in item for substring in foods)
+    return any(substring in item for substring in foods)
 
 @app.route('/')
 def index():
