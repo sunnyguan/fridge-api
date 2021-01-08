@@ -184,6 +184,7 @@ def spending_remove():
         return jsonify([])
 
 @app.route("/receipt", methods=['POST'])
+@cross_origin()
 def detect_face():
     req = request.json
     print(get_words(req['image']))
