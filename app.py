@@ -126,6 +126,12 @@ def get_recipes():
     for i in range(len(recipes)):
         recipes[i]["readyInMinutes"] = recipeInfo[i]["readyInMinutes"]
         recipes[i]["pricePerServing"] = recipeInfo[i]["pricePerServing"]
+        recipes[i]["spoonacularSourceUrl"] = recipeInfo[i]["spoonacularSourceUrl"]
+        recipes[i]["sourceUrl"] = recipeInfo[i]["sourceUrl"]
+        recipes[i]["summary"] = recipeInfo[i]["summary"]
+        recipes[i]["spoonacularScore"] = recipeInfo[i]["spoonacularScore"]
+        recipes[i]["servings"] = recipeInfo[i]["servings"]
+        recipes[i]["healthScore"] = recipeInfo[i]["healthScore"]
         del recipes[i]["id"]
         del recipes[i]["imageType"]
         del recipes[i]["likes"]
